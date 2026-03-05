@@ -1,5 +1,5 @@
 /**
- * scirender — Standalone HTML generator
+ * latex-content-renderer — Standalone HTML generator
  *
  * Generates a complete, self-contained HTML document that renders LaTeX (via MathJax CDN),
  * SMILES chemistry (via SmilesDrawer CDN), tables, figures, and all supported formats.

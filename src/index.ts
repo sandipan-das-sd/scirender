@@ -1,5 +1,5 @@
 /**
- * scirender — Universal LaTeX & Chemistry content renderer
+ * latex-content-renderer — Universal LaTeX & Chemistry content renderer
  *
  * Main entry point. Exports the core processor, web component,
  * standalone HTML generator, styles, and SMILES helpers.

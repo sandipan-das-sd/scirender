@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>scirender Test Page</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 { text-align: center; margin-bottom: 10px; color: #38bdf8; }
+    .subtitle { text-align: center; color: #94a3b8; margin-bottom: 30px; font-size: 14px; }
+    .subtitle a { color: #38bdf8; }
+    .test-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .test-card h2 {
+      color: #38bdf8;
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+    .test-card .input-label {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+    .test-card pre {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+    .render-output {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 16px;
+      color: #1e293b;
+      min-height: 40px;
+    }
+    .render-output img { max-width: 100%; }
+    .render-output table {
+      border-collapse: collapse;
+      margin: 8px 0;
+    }
+    .render-output table td, .render-output table th {
+      border: 1px solid #cbd5e1;
+      padding: 6px 10px;
+    }
+    .status {
+      text-align: center;
+      padding: 20px;
+      font-size: 18px;
+      color: #22c55e;
+    }
+    .badge {
+      display: inline-block;
+      background: #22c55e;
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 100px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .badge.warn { background: #f59e0b; }
+    .badge.fail { background: #ef4444; }
+    #smiles-output canvas { background: #fff; border-radius: 4px; }
+  </style>
+  <!-- MathJax CDN -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        packages: {'[+]': ['mhchem', 'color', 'cancel', 'bbox', 'boldsymbol', 'ams']},
+        processEscapes: true
+      },
+      loader: { load: ['[tex]/mhchem', '[tex]/color', '[tex]/cancel', '[tex]/bbox'] },
+      startup: {
+        pageReady: function() {
+          return MathJax.startup.defaultPageReady().then(function() {
+            console.log('MathJax ready');
+            document.getElementById('mathjax-status').textContent = 'MathJax Loaded';
+          });
+        }
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <!-- SmilesDrawer CDN -->
+  <script src="https://unpkg.com/smiles-drawer@2.0.1/dist/smiles-drawer.min.js"></script>
+</head>
+<body>
+
+  <h1>scirender Test Page</h1>
+  <p class="subtitle">
+    Testing <a href="https://www.npmjs.com/package/scirender" target="_blank">scirender@1.0.0</a> — 
+    processContent() output rendered in browser
+  </p>
+  <p class="subtitle">
+    MathJax: <span id="mathjax-status" class="badge warn">Loading...</span>
+    SmilesDrawer: <span id="smiles-status" class="badge warn">Loading...</span>
+  </p>
+
+  <!-- Test 1: Inline Math -->
+  <div class="test-card">
+    <h2>1. Inline Math</h2>
+    <p class="input-label">Input:</p>
+    <pre>The quadratic formula is $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$ and Einstein's equation $E=mc^2$.</pre>
+    <div class="render-output" id="test-inline-math"></div>
+  </div>
+
+  <!-- Test 2: Display Math -->
+  <div class="test-card">
+    <h2>2. Display Math (Block Equations)</h2>
+    <p class="input-label">Input:</p>
+    <pre>$$\\int_{0}^{\\infty} e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}$$
+
+\\[\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}\\]</pre>
+    <div class="render-output" id="test-display-math"></div>
+  </div>
+
+  <!-- Test 3: mhchem Chemical Equations -->
+  <div class="test-card">
+    <h2>3. Chemistry — mhchem (\\ce)</h2>
+    <p class="input-label">Input:</p>
+    <pre>Combustion: $\\ce{2H2 + O2 -> 2H2O}$
+
+Equilibrium: $\\ce{N2 + 3H2 <=> 2NH3}$
+
+With states: $\\ce{AgCl(s) &lt;=&gt; Ag+(aq) + Cl-(aq)}$</pre>
+    <div class="render-output" id="test-mhchem"></div>
+  </div>
+
+  <!-- Test 4: SMILES Structure Drawing -->
+  <div class="test-card">
+    <h2>4. SMILES Chemical Structures</h2>
+    <p class="input-label">Input:</p>
+    <pre>[SMILES]C1=CC=CC=C1[/SMILES]
+
+[SMILES]CC(=O)O[/SMILES]
+
+[SMILES]C1CCCCC1[/SMILES]</pre>
+    <div class="render-output" id="test-smiles"></div>
+  </div>
+
+  <!-- Test 5: LaTeX Tables -->
+  <div class="test-card">
+    <h2>5. LaTeX Tables (tabular)</h2>
+    <p class="input-label">Input:</p>
+    <pre>\\begin{tabular}{|c|c|c|}
+\\hline
+Element &amp; Symbol &amp; Atomic No. \\\\
+\\hline
+Hydrogen &amp; H &amp; 1 \\\\
+Carbon &amp; C &amp; 6 \\\\
+Oxygen &amp; O &amp; 8 \\\\
+\\hline
+\\end{tabular}</pre>
+    <div class="render-output" id="test-tables"></div>
+  </div>
+
+  <!-- Test 6: Text Formatting -->
+  <div class="test-card">
+    <h2>6. Text Formatting Commands</h2>
+    <p class="input-label">Input:</p>
+    <pre>\\textbf{Bold text}, \\textit{italic text}, \\underline{underlined text}, \\texttt{monospace text}, and \\emph{emphasized text}.</pre>
+    <div class="render-output" id="test-formatting"></div>
+  </div>
+
+  <!-- Test 7: Lists -->
+  <div class="test-card">
+    <h2>7. LaTeX Lists (enumerate/itemize)</h2>
+    <p class="input-label">Input:</p>
+    <pre>\\begin{enumerate}
+\\item First item with math: $a^2 + b^2 = c^2$
+\\item Second item
+\\item Third item
+\\end{enumerate}
+
+\\begin{itemize}
+\\item Bullet one
+\\item Bullet two
+\\end{itemize}</pre>
+    <div class="render-output" id="test-lists"></div>
+  </div>
+
+  <!-- Test 8: Mixed Content -->
+  <div class="test-card">
+    <h2>8. Mixed Content (Math + Chemistry + Text)</h2>
+    <p class="input-label">Input:</p>
+    <pre>In thermodynamics, the Gibbs free energy is given by:
+$$\\Delta G = \\Delta H - T\\Delta S$$
+For the reaction $\\ce{2H2(g) + O2(g) -> 2H2O(l)}$, we can calculate $\\Delta G$ using \\textbf{standard formation values}.
+
+The equilibrium constant relates to Gibbs energy: $\\Delta G^\\circ = -RT\\ln K$</pre>
+    <div class="render-output" id="test-mixed"></div>
+  </div>
+
+  <div class="status" id="final-status">Running tests...</div>
+
+  <script>
+    // ========== scirender processContent (bundled inline for testing) ==========
+    // We load it from the built dist file
+  </script>
+  <script type="module">
+    // Import processContent from the built package
+    import { processContent, renderSmilesInContainer } from './dist/index.mjs';
+
+    const tests = [
+      {
+        id: 'test-inline-math',
+        input: 'The quadratic formula is $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$ and Einstein\'s equation $E=mc^2$.'
+      },
+      {
+        id: 'test-display-math',
+        input: '$$\\int_{0}^{\\infty} e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}$$\n\n\\[\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}\\]'
+      },
+      {
+        id: 'test-mhchem',
+        input: 'Combustion: $\\ce{2H2 + O2 -> 2H2O}$\n\nEquilibrium: $\\ce{N2 + 3H2 <=> 2NH3}$\n\nWith states: $\\ce{AgCl(s) <=> Ag+(aq) + Cl-(aq)}$'
+      },
+      {
+        id: 'test-smiles',
+        input: '[SMILES]C1=CC=CC=C1[/SMILES]\n\n[SMILES]CC(=O)O[/SMILES]\n\n[SMILES]C1CCCCC1[/SMILES]'
+      },
+      {
+        id: 'test-tables',
+        input: '\\begin{tabular}{|c|c|c|}\n\\hline\nElement & Symbol & Atomic No. \\\\\n\\hline\nHydrogen & H & 1 \\\\\nCarbon & C & 6 \\\\\nOxygen & O & 8 \\\\\n\\hline\n\\end{tabular}'
+      },
+      {
+        id: 'test-formatting',
+        input: '\\textbf{Bold text}, \\textit{italic text}, \\underline{underlined text}, \\texttt{monospace text}, and \\emph{emphasized text}.'
+      },
+      {
+        id: 'test-lists',
+        input: '\\begin{enumerate}\n\\item First item with math: $a^2 + b^2 = c^2$\n\\item Second item\n\\item Third item\n\\end{enumerate}\n\n\\begin{itemize}\n\\item Bullet one\n\\item Bullet two\n\\end{itemize}'
+      },
+      {
+        id: 'test-mixed',
+        input: 'In thermodynamics, the Gibbs free energy is given by:\n$$\\Delta G = \\Delta H - T\\Delta S$$\nFor the reaction $\\ce{2H2(g) + O2(g) -> 2H2O(l)}$, we can calculate $\\Delta G$ using \\textbf{standard formation values}.\n\nThe equilibrium constant relates to Gibbs energy: $\\Delta G^\\circ = -RT\\ln K$'
+      }
+    ];
+
+    let passed = 0;
+
+    // Run all tests
+    tests.forEach(test => {
+      try {
+        const el = document.getElementById(test.id);
+        const result = processContent(test.input);
+        el.innerHTML = result;
+        passed++;
+      } catch (e) {
+        const el = document.getElementById(test.id);
+        el.innerHTML = `<span style="color:red">ERROR: ${e.message}</span>`;
+        console.error(`Test ${test.id} failed:`, e);
+      }
+    });
+
+    // Typeset math after processContent runs
+    if (window.MathJax && MathJax.typesetPromise) {
+      MathJax.typesetPromise().then(() => {
+        console.log('MathJax typeset complete');
+      }).catch(err => console.error('MathJax typeset error:', err));
+    } else {
+      // MathJax not loaded yet, wait for it
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          if (window.MathJax && MathJax.typesetPromise) {
+            MathJax.typesetPromise();
+          }
+        }, 1000);
+      });
+    }
+
+    // Render SMILES structures
+    setTimeout(() => {
+      try {
+        const smilesContainer = document.getElementById('test-smiles');
+        renderSmilesInContainer(smilesContainer);
+        document.getElementById('smiles-status').textContent = 'Ready';
+        document.getElementById('smiles-status').className = 'badge';
+      } catch (e) {
+        document.getElementById('smiles-status').textContent = 'Error';
+        document.getElementById('smiles-status').className = 'badge fail';
+        console.error('SMILES render error:', e);
+      }
+    }, 500);
+
+    // Final status
+    const statusEl = document.getElementById('final-status');
+    statusEl.textContent = `processContent() — ${passed}/${tests.length} tests passed ✓`;
+    if (passed === tests.length) {
+      statusEl.style.color = '#22c55e';
+    } else {
+      statusEl.style.color = '#f59e0b';
+    }
+  </script>
+
+</body>
+</html>

@@ -1,5 +1,5 @@
 {
-  "name": "scirender",
+  "name": "latex-content-renderer",
   "version": "1.0.0",
   "description": "Universal LaTeX, math, and chemistry (SMILES/mhchem) content renderer for React, React Native, Flutter, and any WebView-based app. Powered by MathJax.",
   "main": "dist/index.js",
@@ -49,9 +49,9 @@
   ],
   "author": "sandipan-das-sd",
   "license": "MIT",
-  "homepage": "https://github.com/sandipan-das-sd/scirender#readme",
+  "homepage": "https://github.com/sandipan-das-sd/latex-content-renderer#readme",
   "bugs": {
-    "url": "https://github.com/sandipan-das-sd/scirender/issues"
+    "url": "https://github.com/sandipan-das-sd/latex-content-renderer/issues"
   },
   "peerDependencies": {
     "react": ">=17.0.0",
@@ -75,6 +75,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sandipan-das-sd/scirender.git"
+    "url": "git+https://github.com/sandipan-das-sd/latex-content-renderer.git"
   }
 }

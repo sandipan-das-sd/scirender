@@ -1,4 +1,4 @@
-# scirender
+# latex-content-renderer
 
 Universal **LaTeX**, **math**, and **chemistry** (SMILES / mhchem) content renderer for any platform.
 
@@ -26,7 +26,7 @@ Powered by [MathJax 3](https://www.mathjax.org/) and [SmilesDrawer](https://gith
 ## Installation
 
 ```bash
-npm install scirender
+npm install latex-content-renderer
 ```
 
 ---
@@ -46,7 +46,7 @@ Add MathJax CDN to your HTML head (or Next.js `_document` / `layout.tsx`):
 Then use the component:
 
 ```tsx
-import { SciContent } from 'scirender';
+import { SciContent } from 'latex-content-renderer';
 
 function MyPage() {
   return (
@@ -67,7 +67,7 @@ npm install react-native-webview
 ```
 
 ```tsx
-import { SciContentNative } from 'scirender/native';
+import { SciContentNative } from 'latex-content-renderer/native';
 
 function MyScreen() {
   return (
@@ -85,7 +85,7 @@ function MyScreen() {
 Use `getHtml()` to generate a self-contained HTML string:
 
 ```ts
-import { getHtml } from 'scirender';
+import { getHtml } from 'latex-content-renderer';
 
 const html = getHtml('Evaluate $$\\int_0^1 x^2 \\, dx$$', {
   theme: 'light',
@@ -101,7 +101,7 @@ const html = getHtml('Evaluate $$\\int_0^1 x^2 \\, dx$$', {
 ### 4. Core processor only (no React)
 
 ```ts
-import { processContent } from 'scirender';
+import { processContent } from 'latex-content-renderer';
 
 const html = processContent('Solve $\\frac{d}{dx} x^n = nx^{n-1}$');
 // Returns processed HTML string (still needs MathJax to typeset)
