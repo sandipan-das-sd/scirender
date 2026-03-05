@@ -1,0 +1,80 @@
+{
+  "name": "scirender",
+  "version": "1.0.0",
+  "description": "Universal LaTeX, math, and chemistry (SMILES/mhchem) content renderer for React, React Native, Flutter, and any WebView-based app. Powered by MathJax.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./native": {
+      "types": "./dist/native/index.d.ts",
+      "import": "./dist/native/index.mjs",
+      "require": "./dist/native/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublishOnly": "npm run build",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "latex",
+    "mathjax",
+    "math",
+    "chemistry",
+    "smiles",
+    "mhchem",
+    "renderer",
+    "react",
+    "react-native",
+    "expo",
+    "flutter",
+    "webview",
+    "science",
+    "equation",
+    "formula",
+    "katex",
+    "chemical-structure",
+    "smiles-drawer"
+  ],
+  "author": "sandipan-das-sd",
+  "license": "MIT",
+  "homepage": "https://github.com/sandipan-das-sd/scirender#readme",
+  "bugs": {
+    "url": "https://github.com/sandipan-das-sd/scirender/issues"
+  },
+  "peerDependencies": {
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.3",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sandipan-das-sd/scirender.git"
+  }
+}
