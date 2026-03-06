@@ -485,11 +485,11 @@ Questions? Email: [dsandipan3002@gmail.com](mailto:dsandipan3002@gmail.com)
 
 ## Support the Project
 
-| Method | Details |
-|--------|---------|
-| **UPI (India)** | `dsandipan3002@gmail.com` via GPay / PhonePe / Paytm |
-| **PayPal** | [paypal.me/sandipandas3002](https://paypal.me/sandipandas3002) |
-| **GitHub** | Star the repo ⭐ |
+If you'd like to support this project, contact me and I'll send you a payment link:
+
+📧 **Email:** [dsandipan3002@gmail.com](mailto:dsandipan3002@gmail.com)
+
+⭐ **Or just star the repo on GitHub — it helps a lot!**
 
 ---
 
