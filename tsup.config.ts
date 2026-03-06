@@ -12,6 +12,16 @@ export default defineConfig([
     external: ['react', 'react-dom'],
     outDir: 'dist',
   },
+  // CDN / browser global build (no React dependency)
+  {
+    entry: { 'latex-content-renderer.min': 'src/browser.ts' },
+    format: ['iife'],
+    globalName: 'LatexRenderer',
+    minify: true,
+    splitting: false,
+    sourcemap: false,
+    outDir: 'dist',
+  },
   // Native entry (React Native)
   {
     entry: ['src/native/index.ts'],

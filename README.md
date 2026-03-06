@@ -141,6 +141,55 @@ const html = processContent('Derivative: $\\frac{d}{dx} x^n = nx^{n-1}$');
 // Returns HTML string — still needs MathJax loaded in the browser to render math
 ```
 
+### Plain HTML (CDN — no npm, no build tools)
+
+If you're NOT using React/npm/build tools and just have a plain HTML file, add **one script tag** and it works. MathJax and SmilesDrawer are auto-loaded for you:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/latex-content-renderer/dist/latex-content-renderer.min.global.js"></script>
+</head>
+<body>
+  <div id="output"></div>
+
+  <script>
+    // One line — renders math, chemistry, tables, everything
+    LatexRenderer.render('#output', 'The quadratic formula: $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$');
+  </script>
+</body>
+</html>
+```
+
+**That's it. One script tag. MathJax is auto-injected.** No configuration needed.
+
+You can also use the lower-level API if you want more control:
+
+```html
+<script>
+  // Just get the HTML (you handle MathJax yourself)
+  var html = LatexRenderer.processContent('$E = mc^2$');
+  document.getElementById('output').innerHTML = html;
+</script>
+```
+
+**What's available via CDN (`LatexRenderer.*`):**
+
+| Function | What it does |
+|----------|-------------|
+| `LatexRenderer.render(selector, text)` | **Easiest** — process + render + typeset in one call |
+| `LatexRenderer.processContent(text)` | Convert LaTeX string → HTML |
+| `LatexRenderer.getHtml(text, opts)` | Get complete HTML page for WebViews |
+| `LatexRenderer.addAccessibility(html)` | Add ARIA labels for screen readers |
+| `LatexRenderer.createStreamingState()` | Create buffer for AI streaming |
+| `LatexRenderer.feedChunk(state, chunk)` | Feed a chunk from AI stream |
+| `LatexRenderer.flushStream(state)` | Flush remaining buffered text |
+| `LatexRenderer.latexToSvg(tex)` | LaTeX → SVG (needs tex-svg.js) |
+| `LatexRenderer.latexToDataUrl(tex)` | LaTeX → base64 data URL |
+
+> **Note:** The CDN build does NOT include the React components (`SciContent`, `SciContentStreaming`). Those require `npm install` and a bundler. The CDN gives you all the core functions.
+
 ---
 
 ## AI/LLM Streaming Support
