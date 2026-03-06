@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>latex-content-renderer — New Features Demo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 20px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    h1 { text-align: center; color: #38bdf8; margin-bottom: 6px; }
+    .subtitle { text-align: center; color: #94a3b8; margin-bottom: 30px; font-size: 14px; }
+    .section-title {
+      color: #f59e0b;
+      font-size: 22px;
+      margin: 40px 0 6px 0;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #334155;
+    }
+    .section-desc { color: #94a3b8; font-size: 14px; margin-bottom: 16px; }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .card h3 { color: #38bdf8; font-size: 16px; margin-bottom: 10px; }
+    .card .label { font-size: 12px; color: #64748b; margin-bottom: 4px; }
+    .render-box {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 16px;
+      color: #1e293b;
+      min-height: 40px;
+      line-height: 1.6;
+    }
+    .render-box-dark {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 16px;
+      color: #e2e8f0;
+      min-height: 40px;
+      line-height: 1.6;
+    }
+    pre.code {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 13px;
+      color: #94a3b8;
+      margin: 8px 0;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+    button {
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      cursor: pointer;
+      margin: 6px 4px;
+      transition: background 0.2s;
+    }
+    button:hover { background: #2563eb; }
+    button:disabled { background: #475569; cursor: not-allowed; }
+    button.green { background: #22c55e; }
+    button.green:hover { background: #16a34a; }
+    button.orange { background: #f59e0b; }
+    button.orange:hover { background: #d97706; }
+    button.red { background: #ef4444; }
+    button.red:hover { background: #dc2626; }
+    .badge {
+      display: inline-block;
+      background: #22c55e;
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 100px;
+      margin-left: 6px;
+    }
+    .badge.new { background: #f59e0b; }
+    #streaming-output {
+      position: relative;
+    }
+    @keyframes blink-cursor {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: #3b82f6;
+      animation: blink-cursor 1s step-end infinite;
+      vertical-align: text-bottom;
+      margin-left: 2px;
+    }
+    .svg-preview {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      min-height: 60px;
+    }
+    .svg-preview svg { max-width: 100%; }
+    .a11y-demo {
+      background: #1a1a2e;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 8px 0;
+      font-family: monospace;
+      font-size: 12px;
+      color: #a5b4fc;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 640px) {
+      .feature-grid { grid-template-columns: 1fr; }
+    }
+    .status-bar {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .status-item {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .status-item .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+    .dot.green { background: #22c55e; }
+    .dot.yellow { background: #f59e0b; }
+    .dot.red { background: #ef4444; }
+    table { border-collapse: collapse; margin: 8px 0; }
+    td, th { border: 1px solid #cbd5e1; padding: 6px 10px; }
+    .scirender-smiles { background: #fff; border-radius: 10px; padding: 8px 12px; display: inline-block; margin: 0.3em 0; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+    .scirender-smiles img, .scirender-smiles svg, .scirender-smiles canvas { border-radius: 6px; max-width: 280px; height: auto; display: block; }
+  </style>
+
+  <!-- MathJax with SVG output (needed for export feature) -->
+  <script>
+    window.MathJax = {
+      loader: { load: ['[tex]/ams', '[tex]/boldsymbol', '[tex]/html', '[tex]/mhchem'] },
+      tex: {
+        packages: {'[+]': ['ams', 'boldsymbol', 'html', 'mhchem']},
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true
+      },
+      svg: { fontCache: 'global' },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] },
+      startup: {
+        pageReady: () => {
+          return MathJax.startup.defaultPageReady().then(() => {
+            document.getElementById('mathjax-status').innerHTML = '<span class="dot green"></span>MathJax Loaded (SVG)';
+          });
+        }
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+  <script src="https://unpkg.com/smiles-drawer@2.0.1/dist/smiles-drawer.min.js"></script>
+</head>
+<body>
+
+  <h1>🧪 latex-content-renderer — New Features Demo</h1>
+  <p class="subtitle">Test all NEW features: Streaming, Accessibility, SVG Export</p>
+
+  <div class="status-bar">
+    <span class="status-item" id="mathjax-status"><span class="dot yellow"></span>Loading MathJax...</span>
+    <span class="status-item" id="lib-status"><span class="dot yellow"></span>Loading library...</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- FEATURE 1: STREAMING -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <h2 class="section-title">🔴 Feature 1: AI/LLM Streaming <span class="badge new">NEW</span></h2>
+  <p class="section-desc">Simulates a ChatGPT/Claude-like response streaming in. Math renders correctly even as text arrives character by character. Incomplete equations are buffered until they close.</p>
+
+  <div class="card">
+    <h3>Streaming Demo — Simulated AI Math Response</h3>
+    <p class="label">This simulates an LLM sending text chunk by chunk. Watch how math only renders when equations are complete:</p>
+    <div style="margin: 12px 0;">
+      <button id="btn-stream-start" onclick="startStreaming()">▶ Start Streaming</button>
+      <button id="btn-stream-fast" class="green" onclick="startStreaming(15)">⚡ Fast Stream</button>
+      <button id="btn-stream-reset" class="red" onclick="resetStreaming()">↻ Reset</button>
+      <span id="stream-status" style="color:#94a3b8;font-size:13px;margin-left:10px;"></span>
+    </div>
+    <div class="render-box" id="streaming-output" style="min-height: 80px;">
+      <span style="color:#94a3b8;font-style:italic">Click "Start Streaming" to begin...</span>
+    </div>
+    <div style="margin-top: 8px;">
+      <p class="label">Raw buffer (what the LLM has sent so far):</p>
+      <pre class="code" id="stream-raw" style="max-height:120px;overflow-y:auto;font-size:11px;">—</pre>
+      <p class="label">Safe content (what gets rendered — incomplete math is hidden):</p>
+      <pre class="code" id="stream-safe" style="max-height:120px;overflow-y:auto;font-size:11px;">—</pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Streaming Demo 2 — Chemistry arriving mid-stream</h3>
+    <div style="margin: 12px 0;">
+      <button onclick="startChemStream()">▶ Stream Chemistry</button>
+      <button class="red" onclick="resetChemStream()">↻ Reset</button>
+    </div>
+    <div class="render-box" id="chem-stream-output" style="min-height: 60px;">
+      <span style="color:#94a3b8;font-style:italic">Click to begin...</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- FEATURE 2: ACCESSIBILITY -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <h2 class="section-title">♿ Feature 2: Accessibility (ARIA / Screen Reader) <span class="badge new">NEW</span></h2>
+  <p class="section-desc">Adds <code>role="math"</code>, <code>aria-label</code> with human-readable descriptions so screen readers can speak equations. Click each example to see the accessible HTML.</p>
+
+  <div class="card">
+    <h3>Example 1: Quadratic Formula</h3>
+    <p class="label">Input LaTeX:</p>
+    <pre class="code">$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$</pre>
+    <p class="label">Rendered (visual):</p>
+    <div class="render-box" id="a11y-render-1"></div>
+    <button style="margin-top:8px" onclick="showA11y(1)">🔍 Show Accessible HTML</button>
+    <div class="a11y-demo" id="a11y-html-1" style="display:none;"></div>
+  </div>
+
+  <div class="card">
+    <h3>Example 2: Integral</h3>
+    <p class="label">Input LaTeX:</p>
+    <pre class="code">$$\int_{0}^{\infty} e^{-x^2} dx = \frac{\sqrt{\pi}}{2}$$</pre>
+    <p class="label">Rendered (visual):</p>
+    <div class="render-box" id="a11y-render-2"></div>
+    <button style="margin-top:8px" onclick="showA11y(2)">🔍 Show Accessible HTML</button>
+    <div class="a11y-demo" id="a11y-html-2" style="display:none;"></div>
+  </div>
+
+  <div class="card">
+    <h3>Example 3: Chemistry</h3>
+    <p class="label">Input LaTeX:</p>
+    <pre class="code">The reaction $\ce{2H2 + O2 -> 2H2O}$ is combustion of hydrogen.</pre>
+    <p class="label">Rendered (visual):</p>
+    <div class="render-box" id="a11y-render-3"></div>
+    <button style="margin-top:8px" onclick="showA11y(3)">🔍 Show Accessible HTML</button>
+    <div class="a11y-demo" id="a11y-html-3" style="display:none;"></div>
+  </div>
+
+  <div class="card">
+    <h3>Example 4: Greek Letters & Operators</h3>
+    <p class="label">Input LaTeX:</p>
+    <pre class="code">$\alpha + \beta = \gamma$, and $\forall x \in \mathbb{R}, x^2 \geq 0$</pre>
+    <p class="label">Rendered (visual):</p>
+    <div class="render-box" id="a11y-render-4"></div>
+    <button style="margin-top:8px" onclick="showA11y(4)">🔍 Show Accessible HTML</button>
+    <div class="a11y-demo" id="a11y-html-4" style="display:none;"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- FEATURE 3: SVG EXPORT -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <h2 class="section-title">📸 Feature 3: LaTeX → SVG Export <span class="badge new">NEW</span></h2>
+  <p class="section-desc">Convert any LaTeX equation to an SVG string or data URL. Great for sharing, embedding in PDFs, or social media images.</p>
+
+  <div class="card">
+    <h3>Try it: Enter LaTeX and export to SVG</h3>
+    <p class="label">LaTeX input (math mode — no $ needed):</p>
+    <input type="text" id="export-input" value="E = mc^2" style="width:100%;padding:10px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:15px;margin:6px 0;" />
+    <div style="margin: 8px 0;">
+      <button onclick="doExportSvg()">Export to SVG</button>
+      <button class="green" onclick="doExportDataUrl()">Get Data URL</button>
+      <button class="orange" onclick="doDownloadSvg()">⬇ Download SVG</button>
+    </div>
+    <p class="label">SVG Preview:</p>
+    <div class="svg-preview" id="export-preview" style="min-height:60px;">
+      <span style="color:#94a3b8;font-style:italic">Click "Export to SVG" to see result...</span>
+    </div>
+    <p class="label" style="margin-top:8px">SVG Code:</p>
+    <pre class="code" id="export-svg-code" style="max-height:150px;overflow-y:auto;font-size:11px;">—</pre>
+    <p class="label">Data URL:</p>
+    <pre class="code" id="export-data-url" style="max-height:80px;overflow-y:auto;font-size:11px;word-break:break-all;">—</pre>
+  </div>
+
+  <div class="card">
+    <h3>Quick Export Examples</h3>
+    <div class="feature-grid">
+      <div>
+        <button style="width:100%;text-align:left;background:#334155;" onclick="quickExport('\\\\frac{-b \\\\pm \\\\sqrt{b^2-4ac}}{2a}')">Quadratic Formula</button>
+      </div>
+      <div>
+        <button style="width:100%;text-align:left;background:#334155;" onclick="quickExport('\\\\int_0^\\\\infty e^{-x^2} dx = \\\\frac{\\\\sqrt{\\\\pi}}{2}')">Gaussian Integral</button>
+      </div>
+      <div>
+        <button style="width:100%;text-align:left;background:#334155;" onclick="quickExport('\\\\sum_{n=0}^{\\\\infty} \\\\frac{x^n}{n!} = e^x')">Taylor Series</button>
+      </div>
+      <div>
+        <button style="width:100%;text-align:left;background:#334155;" onclick="quickExport('\\\\nabla \\\\times \\\\vec{E} = -\\\\frac{\\\\partial \\\\vec{B}}{\\\\partial t}')">Maxwell's Equation</button>
+      </div>
+    </div>
+    <div class="svg-preview" id="quick-export-preview" style="min-height:60px;margin-top:12px;">
+      <span style="color:#94a3b8;font-style:italic">Click an equation above...</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- EXISTING FEATURES (for reference) -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <h2 class="section-title">✅ Existing Features (still working)</h2>
+  <p class="section-desc">Quick check that existing processContent features still work.</p>
+
+  <div class="card">
+    <h3>Inline & Display Math</h3>
+    <div class="render-box" id="existing-math"></div>
+  </div>
+
+  <div class="card">
+    <h3>Tables</h3>
+    <div class="render-box" id="existing-table"></div>
+  </div>
+
+  <div class="card">
+    <h3>Text Formatting</h3>
+    <div class="render-box" id="existing-format"></div>
+  </div>
+
+  <div class="card">
+    <h3>Lists</h3>
+    <div class="render-box" id="existing-lists"></div>
+  </div>
+
+  <div class="card">
+    <h3>Chemistry (mhchem)</h3>
+    <div class="render-box" id="existing-chem"></div>
+  </div>
+
+  <div class="card">
+    <h3>Images (LaTeX figures + Markdown images)</h3>
+    <div class="render-box" id="existing-images"></div>
+  </div>
+
+  <div class="card">
+    <h3>SMILES Chemical Structures</h3>
+    <div class="render-box" id="existing-smiles"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <script type="importmap">
+  {
+    "imports": {
+      "react": "https://esm.sh/react@18",
+      "react-dom": "https://esm.sh/react-dom@18",
+      "react/jsx-runtime": "https://esm.sh/react@18/jsx-runtime"
+    }
+  }
+  </script>
+  <script type="module">
+    import {
+      processContent,
+      addAccessibility,
+      createStreamingState,
+      feedChunk,
+      flushStream,
+      latexToSvg,
+      latexToDataUrl
+    } from './dist/index.mjs';
+
+    // Expose to window for onclick handlers
+    window._lib = { processContent, addAccessibility, createStreamingState, feedChunk, flushStream, latexToSvg, latexToDataUrl };
+
+    document.getElementById('lib-status').innerHTML = '<span class="dot green"></span>Library Loaded';
+
+    // ════════════════════════════════
+    // Render existing feature demos
+    // ════════════════════════════════
+    function renderAndTypeset(id, input) {
+      const el = document.getElementById(id);
+      el.innerHTML = processContent(input);
+      if (window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise([el]).catch(() => {});
+      }
+    }
+
+    // Wait for MathJax
+    function whenReady(fn) {
+      if (window.MathJax && MathJax.typesetPromise) { fn(); return; }
+      setTimeout(() => whenReady(fn), 200);
+    }
+
+    whenReady(() => {
+      renderAndTypeset('existing-math',
+        "Inline: $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$ and Einstein's $E=mc^2$.\n\nDisplay: $$\\int_{0}^{\\infty} e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}$$"
+      );
+      renderAndTypeset('existing-table',
+        '\\begin{tabular}{|c|c|c|}\\hline Element & Symbol & Atomic No. \\\\ \\hline Hydrogen & H & 1 \\\\ Carbon & C & 6 \\\\ Oxygen & O & 8 \\\\ \\hline\\end{tabular}'
+      );
+      renderAndTypeset('existing-format',
+        '\\textbf{Bold text}, \\textit{italic text}, \\underline{underlined}, \\texttt{monospace}, \\textcolor{red}{red text}, \\colorbox{yellow}{highlighted}.'
+      );
+      renderAndTypeset('existing-lists',
+        '\\begin{enumerate}\\item First: $a^2 + b^2 = c^2$\\item Second item\\item Third\\end{enumerate}\\begin{itemize}\\item Bullet one\\item Bullet two\\end{itemize}'
+      );
+      renderAndTypeset('existing-chem',
+        'Combustion: $\\ce{2H2 + O2 -> 2H2O}$\n\nEquilibrium: $\\ce{N2 + 3H2 <=> 2NH3}$'
+      );
+
+      renderAndTypeset('existing-images',
+        '\\textbf{LaTeX includegraphics:}\n\n\\includegraphics[width=200px]{https://picsum.photos/200/120}\n\n\\textbf{Markdown image:}\n\n![A mountain](https://picsum.photos/seed/math/250/150)\n\n\\textbf{Figure with caption:}\n\n\\begin{figure}\\includegraphics[width=180px]{https://picsum.photos/seed/science/180/120}\\caption{A sample figure with caption}\\end{figure}'
+      );
+
+      renderAndTypeset('existing-smiles',
+        'Caffeine: \\smiles{Cn1cnc2c1c(=O)n(c(=O)n2C)C}\n\nAspirin: \\smiles{CC(=O)Oc1ccccc1C(=O)O}\n\nEthanol: \\smiles{CCO}'
+      );
+
+      // Render accessibility examples (visual part)
+      const a11yExamples = [
+        '$x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$',
+        '$$\\int_{0}^{\\infty} e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}$$',
+        'The reaction $\\ce{2H2 + O2 -> 2H2O}$ is combustion of hydrogen.',
+        '$\\alpha + \\beta = \\gamma$, and $\\forall x \\in \\mathbb{R}, x^2 \\geq 0$'
+      ];
+      a11yExamples.forEach((input, i) => {
+        renderAndTypeset('a11y-render-' + (i + 1), input);
+      });
+
+      // Store the a11y examples for the show button
+      window._a11yExamples = a11yExamples;
+    });
+
+    // ════════════════════════════════
+    // STREAMING
+    // ════════════════════════════════
+    const streamText = `Let me solve this step by step.
+
+The quadratic formula is:
+$$x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$$
+
+For the equation $x^2 - 5x + 6 = 0$, we have $a=1$, $b=-5$, $c=6$.
+
+Substituting:
+$$x = \\frac{5 \\pm \\sqrt{25-24}}{2} = \\frac{5 \\pm 1}{2}$$
+
+So the solutions are $x_1 = 3$ and $x_2 = 2$.
+
+We can verify: $(x-2)(x-3) = x^2 - 5x + 6$ ✓
+
+The discriminant $\\Delta = b^2 - 4ac = 25 - 24 = 1 > 0$, confirming two distinct real roots.`;
+
+    let streamState = null;
+    let streamIdx = 0;
+    let streamTimer = null;
+
+    window.startStreaming = function(speed = 40) {
+      if (streamTimer) return;
+      if (!streamState) {
+        streamState = createStreamingState();
+        streamIdx = 0;
+      }
+      const outputEl = document.getElementById('streaming-output');
+      const rawEl = document.getElementById('stream-raw');
+      const safeEl = document.getElementById('stream-safe');
+      const statusEl = document.getElementById('stream-status');
+
+      statusEl.textContent = '⏳ Streaming...';
+      document.getElementById('btn-stream-start').disabled = true;
+      document.getElementById('btn-stream-fast').disabled = true;
+
+      streamTimer = setInterval(() => {
+        if (streamIdx >= streamText.length) {
+          clearInterval(streamTimer);
+          streamTimer = null;
+          const final = flushStream(streamState);
+          const html = processContent(final);
+          outputEl.innerHTML = html;
+          rawEl.textContent = streamState.buffer;
+          safeEl.textContent = final;
+          statusEl.textContent = '✅ Stream complete!';
+          if (MathJax.typesetPromise) {
+            MathJax.typesetClear && MathJax.typesetClear([outputEl]);
+            MathJax.typesetPromise([outputEl]).catch(() => {});
+          }
+          return;
+        }
+
+        // Send 1-3 characters at a time (simulates chunked response)
+        const chunkSize = Math.floor(Math.random() * 3) + 1;
+        const chunk = streamText.slice(streamIdx, streamIdx + chunkSize);
+        streamIdx += chunkSize;
+
+        const safeContent = feedChunk(streamState, chunk);
+        const html = processContent(safeContent);
+        outputEl.innerHTML = html + '<span class="cursor"></span>';
+        rawEl.textContent = streamState.buffer;
+        safeEl.textContent = safeContent;
+
+        // Re-typeset MathJax
+        if (MathJax.typesetPromise) {
+          MathJax.typesetClear && MathJax.typesetClear([outputEl]);
+          MathJax.typesetPromise([outputEl]).catch(() => {});
+        }
+      }, speed);
+    };
+
+    window.resetStreaming = function() {
+      if (streamTimer) { clearInterval(streamTimer); streamTimer = null; }
+      streamState = null;
+      streamIdx = 0;
+      document.getElementById('streaming-output').innerHTML = '<span style="color:#94a3b8;font-style:italic">Click "Start Streaming" to begin...</span>';
+      document.getElementById('stream-raw').textContent = '—';
+      document.getElementById('stream-safe').textContent = '—';
+      document.getElementById('stream-status').textContent = '';
+      document.getElementById('btn-stream-start').disabled = false;
+      document.getElementById('btn-stream-fast').disabled = false;
+    };
+
+    // Chemistry streaming
+    const chemStreamText = `Water has the formula $\\ce{H2O}$.
+
+The combustion of methane:
+$$\\ce{CH4 + 2O2 -> CO2 + 2H2O}$$
+
+This releases energy: $\\Delta H = -890.4 \\text{ kJ/mol}$.`;
+
+    let chemState = null;
+    let chemIdx = 0;
+    let chemTimer = null;
+
+    window.startChemStream = function() {
+      if (chemTimer) return;
+      chemState = createStreamingState();
+      chemIdx = 0;
+      const el = document.getElementById('chem-stream-output');
+
+      chemTimer = setInterval(() => {
+        if (chemIdx >= chemStreamText.length) {
+          clearInterval(chemTimer); chemTimer = null;
+          const final = flushStream(chemState);
+          el.innerHTML = processContent(final);
+          if (MathJax.typesetPromise) {
+            MathJax.typesetClear && MathJax.typesetClear([el]);
+            MathJax.typesetPromise([el]).catch(() => {});
+          }
+          return;
+        }
+        const chunk = chemStreamText.slice(chemIdx, chemIdx + 2);
+        chemIdx += 2;
+        const safe = feedChunk(chemState, chunk);
+        el.innerHTML = processContent(safe) + '<span class="cursor"></span>';
+        if (MathJax.typesetPromise) {
+          MathJax.typesetClear && MathJax.typesetClear([el]);
+          MathJax.typesetPromise([el]).catch(() => {});
+        }
+      }, 40);
+    };
+
+    window.resetChemStream = function() {
+      if (chemTimer) { clearInterval(chemTimer); chemTimer = null; }
+      chemState = null; chemIdx = 0;
+      document.getElementById('chem-stream-output').innerHTML = '<span style="color:#94a3b8;font-style:italic">Click to begin...</span>';
+    };
+
+    // ════════════════════════════════
+    // ACCESSIBILITY
+    // ════════════════════════════════
+    window.showA11y = function(idx) {
+      const el = document.getElementById('a11y-html-' + idx);
+      if (el.style.display === 'none') {
+        const input = window._a11yExamples[idx - 1];
+        const processed = processContent(input);
+        const accessible = addAccessibility(processed);
+        // Show the raw HTML with indentation
+        el.textContent = accessible
+          .replace(/></g, '>\n<')
+          .replace(/(<span role="math")/g, '\n$1');
+        el.style.display = 'block';
+      } else {
+        el.style.display = 'none';
+      }
+    };
+
+    // ════════════════════════════════
+    // SVG EXPORT
+    // ════════════════════════════════
+    window.doExportSvg = async function() {
+      const input = document.getElementById('export-input').value;
+      if (!input) return;
+      try {
+        const svg = await latexToSvg(input);
+        document.getElementById('export-preview').innerHTML = svg;
+        document.getElementById('export-svg-code').textContent = svg;
+      } catch (err) {
+        document.getElementById('export-preview').innerHTML = '<span style="color:red">Error: ' + err.message + '</span>';
+        document.getElementById('export-svg-code').textContent = err.message;
+      }
+    };
+
+    window.doExportDataUrl = async function() {
+      const input = document.getElementById('export-input').value;
+      if (!input) return;
+      try {
+        const dataUrl = await latexToDataUrl(input);
+        document.getElementById('export-data-url').textContent = dataUrl;
+        document.getElementById('export-preview').innerHTML = '<img src="' + dataUrl + '" alt="LaTeX equation" style="max-width:100%" />';
+      } catch (err) {
+        document.getElementById('export-data-url').textContent = 'Error: ' + err.message;
+      }
+    };
+
+    window.doDownloadSvg = async function() {
+      const input = document.getElementById('export-input').value;
+      if (!input) return;
+      try {
+        const svg = await latexToSvg(input);
+        const blob = new Blob([svg], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'equation.svg';
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    };
+
+    window.quickExport = async function(tex) {
+      document.getElementById('export-input').value = tex.replace(/\\\\/g, '\\');
+      const preview = document.getElementById('quick-export-preview');
+      try {
+        if (MathJax.tex2svg) {
+          const node = MathJax.tex2svg(tex.replace(/\\\\/g, '\\'), { display: true });
+          preview.innerHTML = '';
+          preview.appendChild(node.querySelector('svg').cloneNode(true));
+        } else {
+          const node = MathJax.tex2chtml(tex.replace(/\\\\/g, '\\'), { display: true });
+          preview.innerHTML = '';
+          preview.appendChild(node);
+          MathJax.startup.document.clear();
+          MathJax.startup.document.updateDocument();
+        }
+      } catch (err) {
+        preview.innerHTML = '<span style="color:red">Error rendering</span>';
+      }
+    };
+  </script>
+
+</body>
+</html>

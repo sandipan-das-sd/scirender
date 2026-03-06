@@ -7,108 +7,107 @@
   <img src="https://img.shields.io/badge/platforms-React%20%7C%20RN%20%7C%20Flutter%20%7C%20Android%20%7C%20iOS-blueviolet?style=for-the-badge" alt="platforms" />
 </p>
 
-<p align="center">
-  <b>Universal LaTeX, math, and chemistry (SMILES / mhchem) content renderer for any platform.</b><br/>
-  One package. Every platform. Beautiful scientific content — everywhere.
-</p>
+> **One package to render LaTeX math, chemistry (SMILES / mhchem), tables, figures, and formatted text — on every platform.**
 
-<p align="center">
-  Works with <b>React</b>, <b>React Native (Expo)</b>, <b>Flutter</b>, <b>Android WebView</b>, <b>iOS WKWebView</b>, and any environment that can render HTML.
-</p>
+Works with **React**, **React Native (Expo)**, **Flutter**, **Android WebView**, **iOS WKWebView**, and anything that can render HTML.
 
-<p align="center">
-  Powered by <a href="https://www.mathjax.org/">MathJax 3</a> and <a href="https://github.com/reymond-group/smilesDrawer">SmilesDrawer</a>.
-</p>
+Powered by [MathJax 3](https://www.mathjax.org/) + [SmilesDrawer](https://github.com/reymond-group/smilesDrawer).
 
 ---
 
-## Why latex-content-renderer?
+## What does this package do?
 
-| Problem | Solution |
-|---------|----------|
-| MathJax setup is painful across platforms | **One import** — works everywhere |
-| Chemistry SMILES rendering requires boilerplate | **7 input formats**, auto-rendered as 2D structures |
-| React Native can't render LaTeX natively | **WebView component** with auto-height sizing |
-| Flutter/Android/iOS need custom WebView HTML | **`getHtml()`** gives you a complete, self-contained page |
-| mhchem, tables, figures, lists — all need separate handling | **All built-in** — just pass your content string |
+You give it a string containing LaTeX, math, chemistry, or formatted text — it converts it to beautiful rendered HTML.
 
----
+```
+Input:  "The quadratic formula: $x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$"
+Output: Beautiful rendered math equation in the browser
+```
 
-## Features
-
-- **LaTeX math** — inline (`$...$`, `\(...\)`) and display (`$$...$$`, `\[...\]`)
-- **Chemistry** — SMILES molecular structures (7 input formats), `\ce{}` (mhchem), `\chemfig{}`, `\lewis{}{}`, `\bond{}`, `\ch{}`
-- **Tables** — `\begin{tabular}` → HTML tables with border support
-- **Figures** — `\includegraphics`, `\begin{figure}` with captions
-- **Lists** — `\begin{enumerate}`, `\begin{itemize}`
-- **Text formatting** — `\textbf`, `\textit`, `\underline`, `\textcolor`, `\colorbox`, `\textsc`, etc.
-- **Spacing** — `\quad`, `\hspace`, `\vspace`, `\newline`, `\par`
-- **Markdown images** — `![alt](url)` syntax
-- **Currency protection** — `$100` won't be treated as math
-- **Self-sizing** — Native WebView auto-resizes to content height
-- **Theme support** — Light & dark modes with full color control
-- **Skip processing** — Pass pre-processed HTML with `skipProcessing: true`
+**No setup hassle.** No MathJax configuration. No boilerplate. Just import and use.
 
 ---
 
-## Quick Start
+## Install
 
 ```bash
 npm install latex-content-renderer
 ```
 
-```tsx
-import { SciContent } from 'latex-content-renderer';
-
-<SciContent content="The quadratic formula: $x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$" />
-```
-
-That's it. Math renders beautifully.
-
 ---
 
-## Usage
+## Quick Start (React)
 
-### 1. React (Next.js / Vite / CRA)
-
-Add MathJax CDN to your HTML head (or Next.js `_document` / `layout.tsx`):
+**Step 1:** Add MathJax CDN to your HTML `<head>`:
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
-<!-- Optional: for chemistry SMILES structures -->
-<script src="https://unpkg.com/smiles-drawer@2.0.1/dist/smiles-drawer.min.js"></script>
 ```
 
-Then use the component:
+**Step 2:** Use the component:
 
 ```tsx
 import { SciContent } from 'latex-content-renderer';
 
-function MyPage() {
+function App() {
   return (
-    <SciContent
-      content="Find the roots of $x^2 - 5x + 6 = 0$"
-      className="my-content"
-    />
+    <SciContent content="The quadratic formula: $x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$" />
   );
 }
 ```
 
-### 2. React Native (Expo / bare RN)
+That's it. The math renders beautifully.
 
-Install the peer dependency:
+---
+
+## What can it render?
+
+| Feature | Input example | What it does |
+|---------|---------------|-------------|
+| **Inline math** | `$E = mc^2$` | Renders math inline with text |
+| **Display math** | `$$\int_0^\infty e^{-x^2} dx$$` | Renders math as a centered block |
+| **Chemistry formulas** | `$\ce{H2O}$`, `$\ce{2H2 + O2 -> 2H2O}$` | Chemical equations via mhchem |
+| **SMILES structures** | `<smiles>CCO</smiles>` | 2D molecular structure diagrams |
+| **Tables** | `\begin{tabular}{\|c\|c\|}...\end{tabular}` | HTML tables with borders |
+| **Images** | `\includegraphics{url}` or `![alt](url)` | Embedded images |
+| **Figures** | `\begin{figure}...\caption{...}\end{figure}` | Figures with captions |
+| **Lists** | `\begin{enumerate}\item ...\end{enumerate}` | Numbered & bullet lists |
+| **Bold/Italic** | `\textbf{bold}`, `\textit{italic}` | Text formatting |
+| **Colors** | `\textcolor{red}{text}`, `\colorbox{yellow}{text}` | Colored text & highlights |
+| **Monospace** | `\texttt{code}` | Monospaced text |
+
+---
+
+## Usage by Platform
+
+### React (Next.js / Vite / CRA)
+
+```tsx
+import { SciContent } from 'latex-content-renderer';
+
+function MathPage() {
+  return (
+    <div>
+      <SciContent content="Solve: $x^2 - 5x + 6 = 0$" />
+      <SciContent content="Water: $\ce{H2O}$" />
+    </div>
+  );
+}
+```
+
+### React Native / Expo
 
 ```bash
-npm install react-native-webview
+npm install react-native-webview  # peer dependency
 ```
 
 ```tsx
 import { SciContentNative } from 'latex-content-renderer/native';
 
-function MyScreen() {
+function MathScreen() {
   return (
     <SciContentNative
-      content="The structure of ethanol: <smiles>CCO</smiles>"
+      content="Ethanol structure: <smiles>CCO</smiles>"
       theme="dark"
       fontSize={16}
     />
@@ -116,172 +115,270 @@ function MyScreen() {
 }
 ```
 
-### 3. Flutter / Android / iOS / iframe
+### Flutter / Android / iOS (any WebView)
 
-Use `getHtml()` to generate a self-contained HTML string:
+Use `getHtml()` to get a self-contained HTML string you can load in any WebView:
 
 ```ts
 import { getHtml } from 'latex-content-renderer';
 
-const html = getHtml('Evaluate $$\\int_0^1 x^2 \\, dx$$', {
+const html = getHtml('Evaluate: $$\\int_0^1 x^2 \\, dx$$', {
   theme: 'light',
   fontSize: 18,
 });
 
-// Load this HTML string in any WebView:
-// Flutter: WebView(html: html)
-// Android: webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
-// iOS: webView.loadHTMLString(html, baseURL: nil)
+// Flutter:  WebView(html: html)
+// Android:  webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
+// iOS:      webView.loadHTMLString(html, baseURL: nil)
 ```
 
-### 4. Core processor only (no React)
+### Core function only (no React)
 
 ```ts
 import { processContent } from 'latex-content-renderer';
 
-const html = processContent('Solve $\\frac{d}{dx} x^n = nx^{n-1}$');
-// Returns processed HTML string (still needs MathJax to typeset in browser)
+const html = processContent('Derivative: $\\frac{d}{dx} x^n = nx^{n-1}$');
+// Returns HTML string — still needs MathJax loaded in the browser to render math
 ```
 
 ---
 
-## Supported SMILES Formats
+## AI/LLM Streaming Support
 
-All 7 formats are supported for chemical structure input:
+### What is this and why do you need it?
+
+> **Important: This package does NOT include any AI or LLM. It does NOT call ChatGPT or any API.**
+
+This feature is for **developers who are already building apps that call AI APIs** (ChatGPT, Claude, Gemini, DeepSeek, etc.).
+
+**The problem it solves:**
+
+When your AI API sends back a response with math, it arrives **character by character** (streaming). For example, the AI might be trying to send `$$x = \frac{1}{2}$$`, but you receive it in chunks:
+
+```
+Chunk 1: "The answer is $$x = \frac{"    ← incomplete math!
+Chunk 2: "1}{2}"                          ← still incomplete!
+Chunk 3: "$$"                             ← now it's complete
+```
+
+If you try to render chunk 1 right away, `$$x = \frac{` is broken LaTeX — it shows as ugly text or throws errors.
+
+**What this feature does:** It **buffers incomplete math** and only renders complete equations. Your users see clean text while math is being typed, then the full beautiful equation appears once it's complete.
+
+### React component (easiest way)
+
+```tsx
+import { SciContentStreaming } from 'latex-content-renderer';
+
+// In your AI chat app:
+function AIChatBubble({ text, isStreaming }) {
+  return (
+    <SciContentStreaming
+      content={text}           // The text received so far from the AI
+      isStreaming={isStreaming} // true while AI is still sending
+      showCursor={true}        // Show blinking cursor while streaming
+      debounceMs={100}         // Re-render at most every 100ms
+    />
+  );
+}
+```
+
+### Lower-level API (for custom setups)
+
+```ts
+import { createStreamingState, feedChunk, flushStream, processContent } from 'latex-content-renderer';
+
+const state = createStreamingState();
+
+// As each chunk arrives from your AI API:
+for await (const chunk of myAiStream) {
+  const safeText = feedChunk(state, chunk);  // Buffers incomplete math
+  const html = processContent(safeText);     // Only complete math is rendered
+  myElement.innerHTML = html;
+}
+
+// When the AI finishes sending:
+const finalText = flushStream(state);        // Release any remaining buffered text
+const html = processContent(finalText);
+myElement.innerHTML = html;
+```
+
+### What gets buffered?
+
+| Delimiter | Waits until it sees |
+|-----------|-------------------|
+| `$...$` | Closing `$` |
+| `$$...$$` | Closing `$$` |
+| `\(...\)` | Closing `\)` |
+| `\[...\]` | Closing `\]` |
+| `\begin{equation}` | Matching `\end{equation}` |
+
+Everything else (plain text, HTML) passes through immediately.
+
+---
+
+## LaTeX to SVG Export
+
+Convert any LaTeX equation to an SVG image you can save, share, or embed.
+
+**Use cases:**
+- Save equations as SVG files for presentations or PDFs
+- Embed math in emails or static HTML pages (as `<img>` tags)
+- Generate shareable math images
+
+### Setup
+
+This feature requires MathJax **SVG output**. Use `tex-svg.js` instead of `tex-mml-chtml.js`:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+```
+
+> If you don't need SVG export and only need rendering, `tex-mml-chtml.js` is fine.
+
+### Usage
+
+```ts
+import { latexToSvg, latexToDataUrl, latexToHtmlString } from 'latex-content-renderer';
+
+// Get raw SVG string
+const svg = await latexToSvg('E = mc^2');
+document.getElementById('output').innerHTML = svg;
+
+// Get data URL for <img> tags
+const dataUrl = await latexToDataUrl('\\frac{a}{b}');
+const img = document.createElement('img');
+img.src = dataUrl;  // "data:image/svg+xml;base64,..."
+
+// Get rendered HTML string (needs tex-mml-chtml.js instead)
+const html = await latexToHtmlString('x^2 + y^2 = r^2');
+```
+
+---
+
+## Accessibility (Screen Reader Support)
+
+Add ARIA labels to rendered math so screen readers can read equations aloud.
+
+**Use cases:**
+- Make your education app WCAG compliant
+- Help visually impaired students understand math
+- Required for government and accessibility-audited projects
+
+### Usage
+
+```ts
+import { processContent, addAccessibility } from 'latex-content-renderer';
+
+// Step 1: Process the content normally
+const html = processContent('The circle equation: $x^2 + y^2 = r^2$');
+
+// Step 2: Add accessibility attributes
+const accessibleHtml = addAccessibility(html);
+```
+
+**What it does:**
+- Wraps math in `<span role="math" aria-label="x squared plus y squared equals r squared">`
+- Converts Greek letters: `$\alpha$` → label says "alpha"
+- Converts fractions: `$\frac{a}{b}$` → label says "a over b"
+- Adds `role="table"` and `aria-label` to tables
+- Adds `role="img"` to chemistry structure diagrams
+- Adds alt text to images that don't have one
+
+---
+
+## SMILES Chemistry Formats
+
+7 ways to input chemical structures — all render as 2D molecular diagrams:
 
 | Format | Example |
 |--------|---------|
-| `<smiles>CCO</smiles>` | XML-style |
-| `[smiles]CCO[/smiles]` | BBCode-style |
+| `<smiles>CCO</smiles>` | XML-style tag |
+| `[smiles]CCO[/smiles]` | BBCode-style tag |
 | `<mol>CCO</mol>` | Molecule tag |
 | `<molecule>CCO</molecule>` | Full molecule tag |
 | `<chem>CCO</chem>` | Chemistry tag |
-| `<reaction>CC>>CO</reaction>` | Reaction tag |
-| `SMILES: CCO` | Labeled (own line) |
+| `\smiles{CCO}` | LaTeX command |
+| `SMILES: CCO` | Labeled (on its own line) |
+
+To enable SMILES rendering, add SmilesDrawer to your HTML:
+
+```html
+<script src="https://unpkg.com/smiles-drawer@2.0.1/dist/smiles-drawer.min.js"></script>
+```
 
 ---
 
-## Supported Chemistry Commands
+## Full API Reference
 
-| Command | Output |
-|---------|--------|
-| `\ce{H2O}` | Chemical formula (mhchem) |
-| `\ch{H2SO4}` | chemformula → mhchem |
-| `\chemfig{...}` | Structure placeholder |
-| `\lewis{dots}{atom}` | Lewis dot notation |
-| `\bond{single\|double\|triple}` | Bond symbols |
-| `\arrow` | Reaction arrow → |
-| `\begin{reaction}...\end{reaction}` | Reaction environment |
-| `\begin{scheme}...\end{scheme}` | Scheme environment |
+### Components
 
----
+| Component | Platform | Import |
+|-----------|----------|--------|
+| `SciContent` | React web | `import { SciContent } from 'latex-content-renderer'` |
+| `SciContentNative` | React Native | `import { SciContentNative } from 'latex-content-renderer/native'` |
+| `SciContentStreaming` | React web (AI) | `import { SciContentStreaming } from 'latex-content-renderer'` |
 
-## API Reference
+### Functions
 
-### `SciContent` (React web component)
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `content` | `string` | required | Content with LaTeX/SMILES/etc |
-| `className` | `string` | `''` | CSS class names |
-| `style` | `CSSProperties` | — | Inline styles |
-| `enableSmiles` | `boolean` | `true` | Enable SMILES rendering |
-| `enableImages` | `boolean` | `true` | Enable image conversion |
-| `enableTables` | `boolean` | `true` | Enable table conversion |
-
-### `SciContentNative` (React Native component)
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `content` | `string` | required | Content with LaTeX/SMILES/etc |
-| `theme` | `'light' \| 'dark'` | `'dark'` | Color theme |
-| `fontSize` | `number` | `16` | Base font size |
-| `minHeight` | `number` | `100` | Minimum WebView height |
-| `scrollEnabled` | `boolean` | `false` | Enable scroll inside WebView |
-| `customCss` | `string` | — | Extra CSS to inject |
-
-### `getHtml(content, options?)` → `string`
-
-Returns a complete HTML document string. Options same as `SciContentNative` plus:
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `title` | `string` | `''` | Page title |
-| `mathjaxUrl` | `string` | CDN | Custom MathJax URL |
-| `smilesDrawerUrl` | `string` | unpkg | Custom SmilesDrawer URL |
-| `skipProcessing` | `boolean` | `false` | Skip `processContent` call (use when content is already processed HTML) |
-
-### `processContent(text, options?)` → `string`
-
-Pure function. Converts LaTeX markup to HTML. Does NOT typeset math — you still need MathJax in the browser.
+| Function | What it does |
+|----------|-------------|
+| `processContent(text, opts?)` | Convert LaTeX string → HTML string |
+| `getHtml(text, opts?)` | Get complete HTML page for WebViews |
+| `addAccessibility(html, opts?)` | Add ARIA labels to processed HTML |
+| `createStreamingState()` | Create streaming buffer for AI responses |
+| `feedChunk(state, chunk)` | Feed a chunk, get safe-to-render text back |
+| `flushStream(state)` | Get all remaining buffered text |
+| `latexToSvg(tex, opts?)` | LaTeX → SVG string (needs tex-svg.js) |
+| `latexToHtmlString(tex, opts?)` | LaTeX → rendered HTML string |
+| `latexToDataUrl(tex, opts?)` | LaTeX → base64 data URL |
 
 ---
 
 ## Changelog
 
+### v1.1.0
+
+- **AI Streaming support** — Buffer incomplete math during LLM streaming. New `SciContentStreaming` component + `createStreamingState`/`feedChunk`/`flushStream` API
+- **SVG export** — `latexToSvg()`, `latexToHtmlString()`, `latexToDataUrl()` to convert equations to images
+- **Accessibility** — `addAccessibility()` adds ARIA labels and screen-reader descriptions
+
 ### v1.0.1
-- Fixed MathJax equation rendering — equations now inherit parent color instead of hardcoded white
-- Improved SMILES rendering with full 3-method cascade (SmiDrawer.apply → instance draw → v1 canvas fallback)
-- Added `skipProcessing` option to `getHtml()` for pre-processed content
-- Fixed double-processing bug when using `getHtml()` with already-processed content
+
+- Fixed MathJax equations inheriting wrong color
+- Improved SMILES rendering reliability
+- Added `skipProcessing` option
 
 ### v1.0.0
-- Initial release with full LaTeX, math, chemistry, SMILES, tables, lists, and formatting support
-- React web component (`SciContent`), React Native component (`SciContentNative`), and universal `getHtml()` generator
+
+- Initial release: LaTeX math, chemistry (SMILES + mhchem), tables, figures, lists, text formatting
+- React web + React Native + universal `getHtml()`
 
 ---
 
 ## Contributing
 
-We welcome contributions of all kinds — bug fixes, new features, documentation improvements, translations, and more.
+1. Fork: [github.com/sandipan-das-sd/scirender](https://github.com/sandipan-das-sd/scirender)
+2. Branch: `git checkout -b feature/my-feature`
+3. Commit and open a Pull Request
 
-**How to contribute:**
-
-1. Fork the repository: [github.com/sandipan-das-sd/scirender](https://github.com/sandipan-das-sd/scirender)
-2. Create your feature branch: `git checkout -b feature/my-feature`
-3. Commit your changes: `git commit -m "feat: add my feature"`
-4. Push and open a Pull Request
-
-For questions, ideas, or collaboration proposals — reach out directly:
-
-> **Email:** [dsandipan3002@gmail.com](mailto:dsandipan3002@gmail.com)
+Questions? Email: [dsandipan3002@gmail.com](mailto:dsandipan3002@gmail.com)
 
 ---
 
 ## Support the Project
 
-If **latex-content-renderer** saves you time or helps your product, consider supporting its development. Your contribution — however small — helps keep the project maintained, documented, and growing.
-
-### How to Support
-
 | Method | Details |
 |--------|---------|
-| **UPI (India)** | Send to **dsandipan3002@gmail.com** via any UPI app (GPay, PhonePe, Paytm) |
+| **UPI (India)** | `dsandipan3002@gmail.com` via GPay / PhonePe / Paytm |
 | **PayPal** | [paypal.me/sandipandas3002](https://paypal.me/sandipandas3002) |
-| **GitHub Sponsors** | Star the repo ⭐ and consider sponsoring on GitHub |
-| **Hire / Collaborate** | Need custom scientific rendering, EdTech integration, or a dedicated feature? **Let's talk.** |
-
-> For **any type of contribution, payment, or collaboration** — email me at:
->
-> 📧 **[dsandipan3002@gmail.com](mailto:dsandipan3002@gmail.com)**
-
-### Other ways to help
-
-- ⭐ **Star the repo** — it helps others discover the package
-- 🐛 **Report bugs** — [open an issue](https://github.com/sandipan-das-sd/scirender/issues)
-- 📖 **Improve docs** — PRs for better examples are always welcome
-- 📣 **Spread the word** — share with your team, blog about it, tweet about it
+| **GitHub** | Star the repo ⭐ |
 
 ---
 
 ## Author
 
-**Sandipan Das**
-- GitHub: [@sandipan-das-sd](https://github.com/sandipan-das-sd)
-- npm: [dev_sandipan](https://www.npmjs.com/~dev_sandipan)
-- Email: [dsandipan3002@gmail.com](mailto:dsandipan3002@gmail.com)
-
----
+**Sandipan Das** — [@sandipan-das-sd](https://github.com/sandipan-das-sd) · [dsandipan3002@gmail.com](mailto:dsandipan3002@gmail.com)
 
 ## License
 
