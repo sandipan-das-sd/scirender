@@ -5,26 +5,86 @@
   <img src="https://img.shields.io/npm/dm/latex-content-renderer?color=%2322c55e&style=for-the-badge" alt="downloads" />
   <img src="https://img.shields.io/npm/l/latex-content-renderer?color=%23f59e0b&style=for-the-badge" alt="license" />
   <img src="https://img.shields.io/badge/platforms-React%20%7C%20RN%20%7C%20Flutter%20%7C%20Android%20%7C%20iOS-blueviolet?style=for-the-badge" alt="platforms" />
+  <img src="https://img.shields.io/badge/TypeScript-Ready-3178c6?style=for-the-badge&logo=typescript" alt="TypeScript" />
 </p>
 
-> **One package to render LaTeX math, chemistry (SMILES / mhchem), tables, figures, and formatted text — on every platform.**
-
-Works with **React**, **React Native (Expo)**, **Flutter**, **Android WebView**, **iOS WKWebView**, and anything that can render HTML.
-
-Powered by [MathJax 3](https://www.mathjax.org/) + [SmilesDrawer](https://github.com/reymond-group/smilesDrawer).
+> **The all-in-one LaTeX rendering engine for JavaScript.** Render math equations, chemical formulas (mhchem), SMILES molecular structures, tables, figures, lists, and formatted text — in React, React Native, Flutter, Android, iOS, or plain HTML. Built-in AI/LLM streaming support, accessibility (WCAG/ARIA), and SVG export.
 
 ---
 
-## What does this package do?
+## Description
 
-You give it a string containing LaTeX, math, chemistry, or formatted text — it converts it to beautiful rendered HTML.
+**latex-content-renderer** is a universal, cross-platform npm package that converts LaTeX strings into beautifully rendered HTML. It is designed for developers building **ed-tech platforms**, **AI chatbots** (ChatGPT clones, tutoring bots), **science quiz apps**, **online exam portals**, **research paper viewers**, **chemistry education tools**, and any application that needs to display mathematical or scientific content.
+
+### Why this package exists
+
+Rendering LaTeX in JavaScript has always been fragmented:
+
+- **MathJax** renders math beautifully, but doesn't handle SMILES molecules, LaTeX tables, images, or lists. It requires manual configuration for chemistry (mhchem).
+- **KaTeX** is fast, but doesn't support chemistry at all and can't render tables or images from LaTeX syntax.
+- **React Native** has no native LaTeX solution — you have to build a WebView bridge from scratch.
+- **Flutter / Android / iOS** developers need to generate self-contained HTML and load it into a WebView manually.
+- **AI streaming** (from OpenAI, Anthropic, Google Gemini, Groq) sends LaTeX character by character — rendering partial equations like `$\frac{1` crashes other renderers.
+- **SMILES molecular structures** need an entirely separate library (SmilesDrawer or RDKit) wired up manually.
+
+**latex-content-renderer** solves all of these problems in a single `npm install`.
+
+### What it does
+
+You pass a string containing LaTeX, math, chemistry, or formatted text — it returns clean, rendered HTML:
 
 ```
 Input:  "The quadratic formula: $x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$"
 Output: Beautiful rendered math equation in the browser
 ```
 
+```
+Input:  "Water is $\ce{H2O}$ and ethanol is \smiles{CCO}"
+Output: Rendered chemical formula + 2D molecular structure diagram
+```
+
 **No setup hassle.** No MathJax configuration. No boilerplate. Just import and use.
+
+### Key Features
+
+| Feature | Description |
+|---------|-------------|
+| **Math Rendering** | Inline (`$...$`) and display (`$$...$$`) math equations via MathJax 3 |
+| **Chemistry (mhchem)** | Chemical formulas, reactions, equilibria, isotopes — `$\ce{H2O}$`, `$\ce{CH4 + 2O2 -> CO2 + 2H2O}$` |
+| **SMILES Molecules** | 2D molecular structure diagrams from SMILES strings — `\smiles{CCO}`, `<smiles>c1ccccc1</smiles>`, and 6 more formats |
+| **LaTeX Tables** | `\begin{tabular}...\end{tabular}` rendered as HTML tables |
+| **Images & Figures** | `\includegraphics{url}`, `![alt](url)`, `\begin{figure}...\caption{text}` |
+| **Lists** | `\begin{enumerate}` (numbered) and `\begin{itemize}` (bulleted) |
+| **Text Formatting** | `\textbf{}`, `\textit{}`, `\underline{}`, `\texttt{}`, `\textcolor{}`, `\colorbox{}` |
+| **Spacing** | `\quad`, `\qquad`, `\hspace{}`, `\vspace{}`, `\par` |
+| **AI/LLM Streaming** | Buffers incomplete math from ChatGPT/Claude/Gemini streaming APIs — never shows broken equations |
+| **Accessibility (WCAG)** | Adds `role="math"`, `aria-label` with human-readable descriptions for screen readers |
+| **SVG Export** | Convert any equation to SVG string or base64 data URL for PDFs, presentations, downloads |
+| **CDN Build** | One `<script>` tag — auto-injects MathJax and SmilesDrawer. Zero config. 27KB gzipped. |
+
+### Supported Platforms
+
+| Platform | How |
+|----------|-----|
+| **React** (Next.js, Vite, CRA) | `<SciContent>` component |
+| **React Native / Expo** | `<SciContentNative>` component (WebView-based) |
+| **Flutter** | `getHtml()` → load in WebView |
+| **Android** | `getHtml()` → load in Android WebView |
+| **iOS** | `getHtml()` → load in WKWebView |
+| **Vue / Angular / Svelte** | `processContent()` function → set innerHTML |
+| **Plain HTML / CDN** | One `<script>` tag, global `LatexRenderer` object |
+| **Node.js / SSR** | `processContent()` for server-side pre-processing |
+
+### Who is this for?
+
+- **Ed-tech developers** — Build math quiz apps, online classrooms, homework platforms
+- **AI/LLM app developers** — Render streaming LaTeX from GPT-4, Claude, Gemini in chat UIs
+- **Science educators** — Display chemistry equations, molecular structures, physics formulas
+- **Exam platforms** — Render questions with math, chemistry, tables, and images
+- **Research tools** — Display papers, formulas, and scientific notation
+- **Accessibility teams** — Meet WCAG requirements with built-in ARIA math labels
+
+Powered by [MathJax 3](https://www.mathjax.org/) + [SmilesDrawer](https://github.com/reymond-group/smilesDrawer). TypeScript-first. MIT licensed. Zero runtime dependencies.
 
 ---
 
@@ -338,17 +398,18 @@ const accessibleHtml = addAccessibility(html);
 
 ## SMILES Chemistry Formats
 
-7 ways to input chemical structures — all render as 2D molecular diagrams:
+8 ways to input chemical structures — all render as 2D molecular diagrams:
 
-| Format | Example |
-|--------|---------|
-| `<smiles>CCO</smiles>` | XML-style tag |
-| `[smiles]CCO[/smiles]` | BBCode-style tag |
-| `<mol>CCO</mol>` | Molecule tag |
-| `<molecule>CCO</molecule>` | Full molecule tag |
-| `<chem>CCO</chem>` | Chemistry tag |
-| `\smiles{CCO}` | LaTeX command |
-| `SMILES: CCO` | Labeled (on its own line) |
+| Format | Example | Style |
+|--------|---------|-------|
+| `<smiles>CCO</smiles>` | XML-style tag | HTML |
+| `[smiles]CCO[/smiles]` | BBCode-style tag | Forum |
+| `<mol>CCO</mol>` | Molecule tag | HTML |
+| `<molecule>CCO</molecule>` | Full molecule tag | HTML |
+| `<chem>CCO</chem>` | Chemistry tag | HTML |
+| `<reaction>CCO</reaction>` | Reaction tag | HTML |
+| `\smiles{CCO}` | LaTeX command | LaTeX |
+| `SMILES: CCO` | Labeled (on its own line) | Plain text |
 
 To enable SMILES rendering, add SmilesDrawer to your HTML:
 
@@ -386,6 +447,13 @@ To enable SMILES rendering, add SmilesDrawer to your HTML:
 
 ## Changelog
 
+### v1.1.3
+
+- **`\smiles{...}` format** — Added LaTeX-style `\smiles{CCO}` as Format 8 for SMILES molecular input
+- **CDN `render()` now auto-renders SMILES** — No manual call to `renderSmilesInContainer()` needed
+- **MathJax skip fix** — MathJax no longer tries to process code blocks and input fields
+- **Line break support** — `\par` now correctly renders as paragraph breaks
+
 ### v1.1.0
 
 - **AI Streaming support** — Buffer incomplete math during LLM streaming. New `SciContentStreaming` component + `createStreamingState`/`feedChunk`/`flushStream` API
@@ -407,7 +475,7 @@ To enable SMILES rendering, add SmilesDrawer to your HTML:
 
 ## Contributing
 
-1. Fork: [github.com/sandipan-das-sd/scirender](https://github.com/sandipan-das-sd/scirender)
+1. Fork: [github.com/sandipan-das-sd/latex-content-renderer](https://github.com/sandipan-das-sd/latex-content-renderer)
 2. Branch: `git checkout -b feature/my-feature`
 3. Commit and open a Pull Request
 
